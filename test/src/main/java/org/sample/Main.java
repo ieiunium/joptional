@@ -1,23 +1,27 @@
 package org.sample;
 
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
-
-import java.lang.reflect.Method;
+import by.kir.Jop;
+import by.kir.lombok.hello.EnableJoptional;
 
 public class Main {
 
+    @EnableJoptional
     public static void main(String[] args) {
-        Enhancer enhancer = new Enhancer();
-        enhancer.setSuperclass(Pojo.class);
-        enhancer.setCallback(new MethodInterceptor() {
-            @Override
-            public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-                return null;
-            }
-        });
-        Pojo pojo = (Pojo) enhancer.create();
-        pojo.getSubPojo();
+        Pojo pojo = new JopTest().getPojoWithOutNulls();
+        String title1 = Jop.of(pojo.getSubPojo().getSubSubPojo().getTitle());
+
+        pojo.getSubPojo().getSubSubPojo().setTitle(null);
+        String title2 = Jop.of(pojo.getSubPojo().getSubSubPojo().getTitle());
+        pojo.getSubPojo().setSubSubPojo(null);
+        String title3 = Jop.of(pojo.getSubPojo().getSubSubPojo().getTitle());
+        pojo.setSubPojo(null);
+        String title4 = Jop.of(pojo.getSubPojo().getSubSubPojo().getTitle());
+        pojo = null;
+        String title5 = Jop.of(pojo.getSubPojo().getSubSubPojo().getTitle());
+        System.out.println("title1 = " + title1);
+        System.out.println("title2 = " + title2);
+        System.out.println("title3 = " + title3);
+        System.out.println("title4 = " + title4);
+        System.out.println("title5 = " + title5);
     }
 }

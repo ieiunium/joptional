@@ -1,6 +1,7 @@
 package org.sample;
 
 import by.kir.Jop;
+import by.kir.Joptional;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -12,8 +13,8 @@ public class JopTest {
     @Test
     public void test1() {
         Pojo pojo = getPojoWithOutNulls();
-        Assert.assertEquals("h1",pojo.getSubPojo().getSubSubPojo().getTitle());
-        Assert.assertEquals("h14",pojo.getSubPojoList().get(0).getSubSubPojoList().get(0).getTitle());
+        Assert.assertEquals("h1", pojo.getSubPojo().getSubSubPojo().getTitle());
+        Assert.assertEquals("h14", pojo.getSubPojoList().get(0).getSubSubPojoList().get(0).getTitle());
     }
 
     @Test
@@ -44,5 +45,22 @@ public class JopTest {
                             Arrays.asList(new SubSubPojo("h14"), new SubSubPojo("h15")))));
 
         return pojo;
+    }
+
+    @Test
+    public void test3() {
+        Pojo pojo = null;
+
+        String title3 = pojo == null ? null : (
+            pojo.getSubPojo() == null ? null :
+            (
+                pojo.getSubPojo().getSubSubPojo() == null ? null :
+                (
+                    pojo.getSubPojo().getSubSubPojo().getTitle()
+                )
+            )
+        );
+
+        System.out.println(title3);
     }
 }
