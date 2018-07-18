@@ -1,11 +1,12 @@
 package org.sample;
 
 import by.kir.Jop;
+import by.kir.Tuple;
 import by.kir.lombok.hello.EnableJoptional;
 
+@EnableJoptional
 public class Main {
 
-    @EnableJoptional
     public static void main(String[] args) {
         Pojo pojo = new JopTest().getPojoWithOutNulls();
         String title1 = Jop.of(pojo.getSubPojo().getSubSubPojo().getTitle());
@@ -23,5 +24,7 @@ public class Main {
         System.out.println("title3 = " + title3);
         System.out.println("title4 = " + title4);
         System.out.println("title5 = " + title5);
+
+//        Tuple<Integer> tuple1 = (1);
     }
 }
