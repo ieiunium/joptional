@@ -16,14 +16,18 @@ import com.sun.tools.javac.tree.JCTree.JCMethodDecl;
 import com.sun.tools.javac.tree.JCTree.JCMethodInvocation;
 import com.sun.tools.javac.tree.JCTree.JCVariableDecl;
 import com.sun.tools.javac.tree.PublicMorozov;
+import com.sun.tools.javac.util.List;
 import com.sun.tools.javac.util.Name;
+import lombok.core.handlers.HandlerUtil;
+import lombok.eclipse.handlers.EclipseHandlerUtil;
 import lombok.javac.JavacASTVisitor;
 import lombok.javac.JavacNode;
 import lombok.javac.JavacTreeMaker;
 import lombok.javac.JavacTreeMaker.TreeTag;
 import lombok.javac.JavacTreeMaker.TypeTag;
+import lombok.javac.handlers.JavacHandlerUtil;
 
-import java.util.List;
+import java.lang.reflect.Modifier;
 import java.util.stream.Collectors;
 
 import static com.sun.tools.javac.tree.PublicMorozov.newInstance;
@@ -41,7 +45,7 @@ public class JopFinderVisitor implements JavacASTVisitor {
 
                 ReplaceVisitor replaceVisitor = new ReplaceVisitor();
                 statementNode.traverse(replaceVisitor);
-                List<JCTree> treeList = replaceVisitor
+                java.util.List<JCTree> treeList = replaceVisitor
                     .getStatementList()
                     .stream()
                     .skip(3)
@@ -93,21 +97,19 @@ public class JopFinderVisitor implements JavacASTVisitor {
 
     @Override
     public void visitType(JavacNode typeNode, JCClassDecl type) {
-        JCTree.JCModifiers jcModifiers = newInstance( JCTree.JCModifiers.class, 1L, com.sun.tools.javac.util.List.nil() );
-        Name name = null;
-        JCExpression jcExpression = null;
-        com.sun.tools.javac.util.List<JCTree.JCTypeParameter> list = null;
-        JCVariableDecl jcVariableDecl = null;
-        com.sun.tools.javac.util.List<JCVariableDecl> list1 = null;
-        com.sun.tools.javac.util.List<JCExpression> list2 = null;
-        JCBlock jcBlock = null;
-        JCExpression jcExpression1 = null;
-        Symbol.MethodSymbol methodSymbol = null;
-        JCMethodDecl methodDecl = newInstance(JCMethodDecl.class,
-          jcModifiers, name, jcExpression, list, jcVariableDecl, list1, list2,
-          jcBlock, jcExpression1, methodSymbol);
-
-        type.defs.add( methodDecl );
+        JavacTreeMaker treeMaker = typeNode.getTreeMaker();
+        JCMethodDecl jcMethodDecl = treeMaker.MethodDef(
+          treeMaker.Modifiers( Modifier.PUBLIC & Modifier.STATIC ),
+          typeNode.toName( "tuple" ),
+          JavacHandlerUtil.chainDots( typeNode, "java", "lang", "String" ),
+//          treeMaker.Ident( typeNode.toName( "java.lang.String" ) ),
+          List.<JCTree.JCTypeParameter>nil(),
+          List.<JCVariableDecl>nil(),
+          List.<JCExpression>nil(),
+          treeMaker.Block(0, List.<JCTree.JCStatement>of(treeMaker.Return( getNullLiteral(treeMaker) ))),
+          null
+        );
+        type.defs = type.defs.append( jcMethodDecl );
         System.out.println( "JopFinderVisitor.visitType" );
         System.out.println( "typeNode = [" + typeNode + "], type = [" + type + "]" );
     }

@@ -27,4 +27,8 @@ public class Main {
 
 //        Tuple<Integer> tuple1 = (1);
     }
+
+    public Tuple test(){
+      return null;
+    }
 }
